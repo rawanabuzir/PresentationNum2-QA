@@ -1,41 +1,31 @@
-/// <reference types="Cypress" />
-import moment from 'moment';
+/// <reference types="cypress" />
 
-Cypress.Commands.add('getFormattedDate', (selector) => {
-    return cy.get(selector).invoke('text').then((text) => {
-        // Extract date parts from the text
-        const dateParts = text.split(' ');
-        const month = dateParts[0];
-        const day = dateParts[1].replace(',', '');
-        const dayOfWeek = dateParts[2];
-
-    =
-        return moment(`${month} ${day}`, 'MMMM D').format('MMMMDD dddd');
-    });
-});
-
-describe('new assertions', () => {
+describe('This is to check Trip information', () => {
     beforeEach(() => {
         cy.visit('https://www.almosafer.com/ar');
         cy.get('.cta__saudi').click();
-        cy.get('[data-testid="Header__LanguageSwitch"]').click();
+        cy.wait(2000);
     });
 
-    it('check if the departure date is equal to today + 1', () => {
-        cy.getFormattedDate('[data-testid="FlightSearchBox__FromDateButton"]').should(
-            'eq',
-            moment().add(1, 'day').format('MMMMDD dddd')
-        );
+    it('this is to check the departure date is set to be today date +1', () => {
+        let tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        let day = String(tomorrow.getDate());
+        let month = tomorrow.toLocaleDateString('ar-AE', { month: 'long' });
+        let WeekDay = tomorrow.toLocaleDateString('ar-AE', { weekday: 'long' });
+        cy.get('[data-testid="FlightSearchBox__FromDateButton"]').should('include.text', `${month}${day} ${WeekDay}`);
     });
 
-    it('check if the return date is equal to today + 2', () => {
-        cy.getFormattedDate('[data-testid="FlightSearchBox__ToDateButton"]').should(
-            'eq',
-            moment().add(2, 'days').format('MMMMDD dddd')
-        );
+    it('this is to check the return date is set to be today date +2', () => {
+        let tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 2);
+        let day = String(tomorrow.getDate());
+        let month = tomorrow.toLocaleDateString('ar-AE', { month: 'long' });
+        let WeekDay = tomorrow.toLocaleDateString('ar-AE', { weekday: 'long' });
+        cy.get('[data-testid="FlightSearchBox__ToDateButton"]').should('include.text', `${month}${day}${WeekDay}`);
     });
 
-    it('check if the class is economy by default', () => {
-        cy.get('.sc-jWxkHr').should('include.text', 'Economy');
+    it('this is to check the flight class is set to be economy by default', () => {
+        cy.get('.sc-jWxkHr').should('contain.text', 'السياحية');
     });
 });
