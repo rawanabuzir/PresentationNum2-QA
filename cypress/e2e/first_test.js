@@ -1,6 +1,19 @@
 /// <reference types="Cypress" />
 import moment from 'moment';
 
+Cypress.Commands.add('getFormattedDate', (selector) => {
+    return cy.get(selector).invoke('text').then((text) => {
+        // Extract date parts from the text
+        const dateParts = text.split(' ');
+        const month = dateParts[0];
+        const day = dateParts[1].replace(',', '');
+        const dayOfWeek = dateParts[2];
+
+    =
+        return moment(`${month} ${day}`, 'MMMM D').format('MMMMDD dddd');
+    });
+});
+
 describe('new assertions', () => {
     beforeEach(() => {
         cy.visit('https://www.almosafer.com/ar');
@@ -9,22 +22,16 @@ describe('new assertions', () => {
     });
 
     it('check if the departure date is equal to today + 1', () => {
-        const tomorrowDate = moment().add(1, 'day');
-        const formattedDate = tomorrowDate.format('MMMMDD dddd'); // Match the actual format
-
-        cy.get('[data-testid="FlightSearchBox__FromDateButton"]').should(
-            'include.text',
-            formattedDate
+        cy.getFormattedDate('[data-testid="FlightSearchBox__FromDateButton"]').should(
+            'eq',
+            moment().add(1, 'day').format('MMMMDD dddd')
         );
     });
 
     it('check if the return date is equal to today + 2', () => {
-        const returnDate = moment().add(2, 'days');
-        const returnFormatted = returnDate.format('MMMMDD dddd'); // Match the actual format
-
-        cy.get('[data-testid="FlightSearchBox__ToDateButton"]').should(
-            'include.text',
-            returnFormatted
+        cy.getFormattedDate('[data-testid="FlightSearchBox__ToDateButton"]').should(
+            'eq',
+            moment().add(2, 'days').format('MMMMDD dddd')
         );
     });
 
